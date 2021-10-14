@@ -1,0 +1,73 @@
+﻿@model ReflectionIT.Mvc.Paging.PagingList<ClientManagment.Models.Client>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
+@*@model IEnumerable<ClientManagment.Models.Client>*@
+
+@{
+    ViewData["Title"] = "Agregar Cliente";
+}
+
+
+<div class="row d-flex align-items-center">
+    
+    <h1 class="col-sm-6">Listado de Clientes</h1>
+    
+    <div class="col-sm-1"></div>
+
+    <div class="col-sm-5">
+        <a asp-action="Create" type="button" class="col-sm-12 btn btn-primary">Crear Nuevo</a>
+    </div>
+</div>
+
+<br />
+
+
+<form method="get" class="form-inline">
+ 
+    <input name="filter" class="form-control col-sm-2" placeholder="Nombre o DNI" value="@Model.RouteValue["Filter"]" />
+
+    <div class="col-md-1"></div>
+
+    <button type="submit" class="btn btn-info col-sm-1">
+        <span class="glyphicon glyphicon-search" aria-hidden="true">Buscar</span>
+    </button>
+</form>
+
+<br />
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination pg-blue">
+        <li class="page-item ">
+            <a class="page-link" tabindex="-1">1<vc:pager paging-list="@Model" /></a>
+        </li>
+    </ul>
+</nav>
+
+<br />
+
+<div class="card-group">
+    <div class="card-columns">
+        @foreach (var item in Model)
+        {
+            <div class="card">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                    <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name),  @Html.DisplayFor(modelItem => item.Surname)</h5>
+
+                    <p class="card-text">DNI: @Html.DisplayFor(modelItem => item.DocumentNumber)</p>
+                    <p class="card-text"> @Html.DisplayFor(modelItem => item.Description)</p>
+
+                    <a asp-action="Details" asp-route-id="@item.ClientId" class="btn btn-dark">Detalles</a>
+                    <a asp-action="Edit" asp-route-id="@item.ClientId" class="btn btn-dark">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@item.ClientId" class="btn btn-warning">Eliminar</a>
+                </div>
+            </div>
+
+        }
+    </div>
+</div>
+
+<nav aria-label="Page navigation example pagination" class=" page-item page-link">
+    <vc:pager paging-list="@Model" />
+</nav>
+
