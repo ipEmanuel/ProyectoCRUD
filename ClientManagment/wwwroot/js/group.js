@@ -14,11 +14,6 @@
         var url_ = "/Groups/GetClientsList?pageIndex=" + _pageIndex;
 
         //con jquery llamamos a un método get del controller
-        //$.get(url_, function (data) {
-        //    debugger;
-        //    $("div#clientsList").html(data);
-        //});
-
         $.ajax({
             url: url_,
             data: {},//formData,
@@ -28,7 +23,6 @@
             type: 'GET',
             async: false,
             success: function (data) {
-                //debugger;
                 $("div#clientsList").html(data);
                 $("a.page-link").removeAttr("href");
 
@@ -37,8 +31,7 @@
                 console.log(clientsIdArray);
             },
             error: function (e) {
-                //debugger;
-                //console.log(e);
+                console.log(e);
             }
         });
 
@@ -50,19 +43,14 @@
         var checkBoxs = document.getElementsByClassName("clientGroup");
 
         for (var i = 0; i < checkBoxs.length; i++) {
-            console.log(checkBoxs[i]);
 
             let existe = findValueInArray(checkBoxs[i].dataset.clientid, clientsIdArray);
 
-            console.log("existe? " + existe);
-
             if (existe) {
-                console.log(checkBoxs[i]);
                 checkBoxs[i].checked = true;
-            }//checkBoxs[i].attr("checked", true);
+            }
         }
     }
-
 
     function findValueInArray(value, arr) {
         let result = false;
@@ -80,20 +68,13 @@
 
     $(document).on("click", "input.clientGroup", function () {
 
-        /*TENGO QUE PREGUNTAR SI ESTÁ CHEQUEADO O NO
-         
-        - SI ESTÁ CHEQUEADO, AGREGO EL ID DEL CLIENTE AL ARRAT
-        - SI NO ESTÁ CHEQUEADO, LO REMUEVO
-
+        /*TENGO QUE PREGUNTAR SI ESTÁ CHEQUEADO O NO      
+            - SI ESTÁ CHEQUEADO, AGREGO EL ID DEL CLIENTE AL ARRAY
+            - SI NO ESTÁ CHEQUEADO, LO REMUEVO
          */
 
         let clientId = $(this)[0].dataset.clientid;
         let isChecked = $(this).is(":checked");
-
-        console.log("chequeado? " + $(this).is(":checked"));
-        console.log("valor del dataset " + $(this)[0].dataset.clientid);
-
-        console.log("-----------------------------------------------");
 
         //1 - PREGINTO SI ESTA CHEQUEADO
         if (isChecked)
@@ -104,8 +85,6 @@
             });
         }
 
-        console.log(clientsIdArray);
-        //arr.splice($.inArray(clientId, clientsIdArray), 1);
     });
 
     //CREAMOS EL GRUPO USANDO AJAX

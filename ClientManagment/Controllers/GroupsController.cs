@@ -121,9 +121,14 @@ namespace ClientManagment.Controllers
                 @group.Description = groupDescription;
                 group.Clients = new List<Client>();
 
+                var dbClients = new List<Client>();
+
+                if (clientsid.Count() > 0)
+                    dbClients = await _context.Clients.ToListAsync();
+
                 foreach (var clientId in clientsid)
                 {
-                    Client client = await _context.Clients.FindAsync(Guid.Parse(clientId.Value));
+                    Client client = dbClients.Find(Guid.Parse(clientId.Value));
 
                     if (client != null)
                         group.Clients.Add(client);
@@ -166,12 +171,53 @@ namespace ClientManagment.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("GroupId,Name,Description")] Group @group)
+        public async Task<IActionResult> Edit()
         {
-            if (id != @group.GroupId)
+            Guid groupId = Guid.Parse(Request.Form["groupId"]);
+            Group @group = await _context.Groups.FindAsync(groupId);
+
+            if (@group == null)
             {
                 return NotFound();
+            }
+
+            dynamic clientsid = JsonConvert.DeserializeObject(Request.Form["clientsId"]);        
+            string groupName = Request.Form["groupName"];
+            string groupDescription = Request.Form["groupDescription"];
+
+            List<Guid> newClientsIds = new List<Guid>(); 
+
+            @group.Name = groupName;
+            @group.Description = groupDescription;
+
+            var dbClients = new List<Client>();
+
+            if (clientsid.Count() > 0)
+                dbClients = await _context.Clients.ToListAsync();
+
+            foreach (var clientId in clientsid)
+            {
+                newClientsIds.Add(Guid.Parse(clientId.Value));
+
+                //me fijo si el cliente que viene ya está en el grupo
+                var existe =  @group.Clients.ToList().Find(Guid.Parse(clientId.Value));
+
+                if(existe == null)
+                {
+                    //me quedo con el cliente que voy a agregar
+                    Client client = dbClients.Find(Guid.Parse(clientId.Value));
+
+                    if (client != null)
+                        group.Clients.Add(client);
+                }
+            }
+
+            //quedate con los clientes que existan actualmente en el grupo pero que no lleguen chequeados (quiere decir que los deschequié)
+            var result = @group.Clients.Where(p => newClientsIds.All(p2 => p2 != p.ClientId));
+
+            foreach (var client in result)
+            {
+                @group.Clients.Remove(client);
             }
 
             if (ModelState.IsValid)
