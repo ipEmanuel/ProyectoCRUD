@@ -15,6 +15,7 @@ namespace ClientManagment.Data
         }
 
         public DbSet<Client> Clients { get; set; }
+        public DbSet<Group> Groups { get; set; }
         public object Suppliers { get; internal set; }
     }
 }

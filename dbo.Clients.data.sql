@@ -1,0 +1,1 @@
+﻿SELECT UPPER(Name)As Name, UPPER(Surname)AS Surname FROM Clients

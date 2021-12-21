@@ -40,14 +40,18 @@ namespace ClientManagment
             services.AddControllersWithViews();
 
             services.AddMvc().AddRazorPagesOptions(options => {
-                options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage/Index", "");
+                //options.Conventions.AuthorizeAreaFolder("Identity", "/Account/Manage/Index", "");
                 options.Conventions.AddAreaPageRoute("Identity", "/Account/Login", "");
             }).SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             // Add framework services.
             services.AddMvc();
 
-            services.AddPaging();
+            services.AddPaging(options => {
+                options.ViewName = "Bootstrap4";
+                options.HtmlIndicatorDown = " <span>&darr;</span>";
+                options.HtmlIndicatorUp = " <span>&uarr;</span>";
+            });
 
         }
 

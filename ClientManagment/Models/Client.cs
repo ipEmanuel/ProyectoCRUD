@@ -30,18 +30,31 @@ namespace ClientManagment.Models
         [DisplayName("DNI")]
         public string DocumentNumber { get; set; }
 
-        [Required(ErrorMessage = "Este campo obligatorio")]
-        //[Column(TypeName = "varchar(50)")]
-        [DisplayName("Edad")]
-        public int Age { get; set; }
+        [Column(TypeName = "DateTime2")]
+        [Display(Name = "Fecha de Nacimiento")]
+        [DataType(DataType.Date)]
+        public DateTime DateOfBirth { get; set; }
 
-        [Required(ErrorMessage = "Este campo obligatorio")]
+        //[Required(ErrorMessage = "Este campo obligatorio")]
         [Column(TypeName = "varchar(300)")]
         [DisplayName("Descripción")]
         public string Description { get; set; }
 
+        [Required(ErrorMessage = "Este campo obligatorio")]
+        [DisplayName("No deseado")]
+        public bool isNotWished { get; set; } //0 es deseado y 1 no deseado
+
+        [NotMapped]
+        public bool State { get; set; } //0 es deseado y 1 no deseado
+
         [DisplayName("Imagen")]
         public string ImagePath { get; set; }
-        
+
+        [DisplayName("Patente")]
+        [Column(TypeName = "varchar(12)")]
+        public string Patent { get; set; }
+
+        public ICollection<Group> Groups { get; set; }
+
     }
 }

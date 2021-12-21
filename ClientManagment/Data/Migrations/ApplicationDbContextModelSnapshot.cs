@@ -16,8 +16,23 @@ namespace ClientManagment.Data.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.10")
+                .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("ClientGroup", b =>
+                {
+                    b.Property<Guid>("ClientsClientId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GroupsGroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("ClientsClientId", "GroupsGroupId");
+
+                    b.HasIndex("GroupsGroupId");
+
+                    b.ToTable("ClientGroup");
+                });
 
             modelBuilder.Entity("ClientManagment.Models.Client", b =>
                 {
@@ -25,11 +40,10 @@ namespace ClientManagment.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("DateTime2");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("varchar(300)");
 
                     b.Property<string>("DocumentNumber")
@@ -43,13 +57,38 @@ namespace ClientManagment.Data.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
+                    b.Property<string>("Patent")
+                        .HasColumnType("varchar(12)");
+
                     b.Property<string>("Surname")
                         .IsRequired()
                         .HasColumnType("varchar(50)");
 
+                    b.Property<bool>("isNotWished")
+                        .HasColumnType("bit");
+
                     b.HasKey("ClientId");
 
                     b.ToTable("Clients");
+                });
+
+            modelBuilder.Entity("ClientManagment.Models.Group", b =>
+                {
+                    b.Property<Guid>("GroupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("varchar(300)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("varchar(50)");
+
+                    b.HasKey("GroupId");
+
+                    b.ToTable("Groups");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -250,6 +289,21 @@ namespace ClientManagment.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("ClientGroup", b =>
+                {
+                    b.HasOne("ClientManagment.Models.Client", null)
+                        .WithMany()
+                        .HasForeignKey("ClientsClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ClientManagment.Models.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupsGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

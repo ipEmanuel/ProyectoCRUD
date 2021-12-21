@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Eliminar";
+    var age = 0;
 }
 
 <h1>Eliminar Cliente</h1>
@@ -10,6 +11,11 @@
 <div>
     
     <hr />
+       @if (Model.ImagePath == null){
+            <img class="img-thumbnail" src="/img/avatar.png" style="width:200px" />
+        }else{
+            <img class="img-thumbnail" src="@Model.ImagePath" asp-append-version="true" alt="@Model.ImagePath" style="width:200px;height:200px;"/>
+        } 
     <dl class="row">
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
@@ -30,10 +36,25 @@
             @Html.DisplayFor(model => model.DocumentNumber)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Age)
+            Edad
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Age)
+        <dd class="col-sm-10">
+
+            @{
+                if (Model.DateOfBirth.ToString() != "01/01/0001 0:00:00")
+                {
+                    age = DateTime.Now.Year - Model.DateOfBirth.Year;
+                    if (DateTime.Now.DayOfYear < Model.DateOfBirth.DayOfYear)
+                        age = age - 1;
+                }
+            }
+
+            @if (age == 0)
+            {
+                <span>NO se ha registrado fecha de nacimiento</span>
+            }
+            else
+                @age
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Description)
@@ -41,12 +62,12 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Description)
         </dd>
-        <dt class = "col-sm-2">
+        @*<dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.ImagePath)
-        </dt>
-        <dd class = "col-sm-10">
+        </dt>*@
+        @*<dd class = "col-sm-10">
             @Html.DisplayFor(model => model.ImagePath)
-        </dd>
+        </dd>*@
     </dl>
     
     <form asp-action="Delete">

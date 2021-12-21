@@ -7,67 +7,71 @@
     ViewData["Title"] = "Agregar Cliente";
 }
 
+<div class="container">
 
-<div class="row d-flex align-items-center">
-    
-    <h1 class="col-sm-6">Listado de Clientes</h1>
-    
-    <div class="col-sm-1"></div>
-
-    <div class="col-sm-5">
-        <a asp-action="Create" type="button" class="col-sm-12 btn btn-primary">Crear Nuevo</a>
+    <div class="row d-flex align-items-center">
+        <div class="col-md-12" style="margin-top:2%">
+            <a asp-action="Index" style="text-decoration:none; color:black"><h1 style="text-align:center">Listado de Clientes</h1></a>
+        </div>
     </div>
-</div>
+    
+    <hr>
+    
+    <div class="row">
+        <div class="col-12 col-md-5">
+            <a asp-action="Create" type="button" class="col-sm-12 btn btn-primary" style="margin-top:3%">Crear Nuevo</a>
+        </div>
+        <div class="col-sm-1"></div>
+        <form method="get" class="form-inline col-12 col-md-6">
+            <input name="filter" class="form-control col-12 col-md-7 " placeholder="Nombre DNI o Patente" value="@Model.RouteValue["Filter"]" style="margin-top:3%" />
+            <div class="col-2"></div>
+            <button type="submit" class="btn btn-dark col-12 col-md-3 " style="margin-top:3%">
+                <span class="glyphicon glyphicon-search" aria-hidden="true">Buscar</span>
+            </button>
+        </form>
+    </div>
 
-<br />
+    <br />
 
+    <nav aria-label="navigation example">
+        <vc:pager paging-list="@Model"/>
+    </nav>
 
-<form method="get" class="form-inline">
- 
-    <input name="filter" class="form-control col-sm-2" placeholder="Nombre o DNI" value="@Model.RouteValue["Filter"]" />
+    <div class="card-group">
+        <div class="card-columns embed-responsive ">
+            @foreach (var item in Model)
+            {
+                <div class="card">
+                    @if (item.ImagePath == null)
+                    {
+                        <div class="embed-responsive embed-responsive-1by1">
+                            @*<img alt="Card image cap" class="card-img-top embed-responsive-item" src="img/butterPecan.jpg" />*@
+                            <img alt="Card image cap" class="img-thumbnail image card-img-top embed-responsive-item" src="/img/avatar.png" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="embed-responsive embed-responsive-1by1">
+                            <img class="img-thumbnail image card-img-top embed-responsive-item" src="@item.ImagePath" asp-append-version="true" alt="@item.ImagePath" />
+                        </div>
+                    }
 
-    <div class="col-md-1"></div>
-
-    <button type="submit" class="btn btn-info col-sm-1">
-        <span class="glyphicon glyphicon-search" aria-hidden="true">Buscar</span>
-    </button>
-</form>
-
-<br />
-
-<nav aria-label="Page navigation example">
-    <ul class="pagination pg-blue">
-        <li class="page-item ">
-            <a class="page-link" tabindex="-1">1<vc:pager paging-list="@Model" /></a>
-        </li>
-    </ul>
-</nav>
-
-<br />
-
-<div class="card-group">
-    <div class="card-columns">
-        @foreach (var item in Model)
-        {
-            <div class="card">
-                <img src="..." class="card-img-top" alt="...">
                 <div class="card-body">
                     <h5 class="card-title">@Html.DisplayFor(modelItem => item.Name),  @Html.DisplayFor(modelItem => item.Surname)</h5>
-
                     <p class="card-text">DNI: @Html.DisplayFor(modelItem => item.DocumentNumber)</p>
                     <p class="card-text"> @Html.DisplayFor(modelItem => item.Description)</p>
-
-                    <a asp-action="Details" asp-route-id="@item.ClientId" class="btn btn-dark">Detalles</a>
-                    <a asp-action="Edit" asp-route-id="@item.ClientId" class="btn btn-dark">Editar</a>
-                    <a asp-action="Delete" asp-route-id="@item.ClientId" class="btn btn-warning">Eliminar</a>
+                    <p class="card-text"> @Html.DisplayFor(modelItem => item.Patent)</p>
+                    <a asp-action="Details" asp-route-id="@item.ClientId" title="Detalles"><i class="fas fa-eye" style="color: #2196F3; margin-left:20px;"></i></a>
+                    <a asp-action="Edit" asp-route-id="@item.ClientId" title="Editar"><i class="fas fa-pen" style="color: #FFC107; margin-left: 20px;"></i></a>
+                    <a asp-action="Delete" asp-route-id="@item.ClientId" title="Eliminar"><i class="fas fa-trash" style="color: #FF5252; margin-left: 20px;"></i></a>
                 </div>
-            </div>
-
-        }
+                </div>
+            }
+        </div>
     </div>
-</div>
 
-<nav aria-label="Page navigation example pagination" class=" page-item page-link">
-    <vc:pager paging-list="@Model" />
-</nav>
+    <nav aria-label="Suppliers navigation example">
+        <vc:pager paging-list="@Model" />
+    </nav>
+</div>
 

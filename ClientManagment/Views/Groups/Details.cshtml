@@ -1,0 +1,47 @@
+﻿@model ClientManagment.Models.Group
+
+@{
+    ViewData["Title"] = "Detalles";
+    var integrantes = "No se han asignado clientes a este grupo";
+}
+
+<h1>Detalles del Grupo</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+        <dt class="col-sm-2">
+            INTEGRANTES
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.Clients != null && Model.Clients.Count > 0)
+            {
+                integrantes = string.Empty;
+
+                @foreach (var cliente in Model.Clients)
+                {
+                    integrantes += cliente.Name + ", " + cliente.Surname + " | ";
+                }
+            }
+
+            @integrantes
+        </dd>
+    </dl>
+   
+</div>
+<div>
+    <a asp-action="Editar" asp-route-id="@Model.GroupId" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-dark">Volver</a>
+</div>

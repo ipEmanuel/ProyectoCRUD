@@ -69,3 +69,27 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+/*imagen*/
+.image {
+    width: 100%;
+    height: 100%;
+}
+.embed-responsive .card-img-top {
+    object-fit: cover;
+}
+/*******************************/
+.texto-caja {
+    color: white;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.caja {
+    min-width: 100%;
+    min-height: 150px;
+}
+
+.homeBox :hover {
+    opacity: 0.9 !important;
+}
+/*-------------------------------------------------------------------------------*/
