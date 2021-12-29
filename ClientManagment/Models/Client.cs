@@ -41,7 +41,7 @@ namespace ClientManagment.Models
         public string Description { get; set; }
 
         [Required(ErrorMessage = "Este campo obligatorio")]
-        [DisplayName("No deseado")]
+        [DisplayName("No deseado?")]
         public bool isNotWished { get; set; } //0 es deseado y 1 no deseado
 
         [NotMapped]

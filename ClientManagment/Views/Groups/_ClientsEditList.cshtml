@@ -1,0 +1,59 @@
+﻿@{
+    Layout = null;
+}
+
+@model ReflectionIT.Mvc.Paging.PagingList<ClientManagment.Models.Client>
+@using ReflectionIT.Mvc.Paging
+@addTagHelper *, ReflectionIT.Mvc.Paging
+
+<nav aria-label="navigation example">
+    <vc:pager paging-list="@ViewBag.clients" />
+</nav>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nombre
+            </th>
+            <th>
+                Apellido
+            </th>
+            <th>
+                Documento
+            </th>
+            <th>
+                Estado
+            </th>
+            <th>
+                Incluir?
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.clients)
+        {
+            <tr>
+                <td>
+                    @item.Name
+                </td>
+                <td>
+                    @item.Surname
+                </td>
+                <td>
+                    @item.DocumentNumber
+                </td>
+                @*<td>
+                        @item.isNotWished
+                    </td>*@
+                <td>
+                    <input data-clientId=@item.ClientId type="checkbox" class="clientGroup" />
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav aria-label="Suppliers navigation example">
+    <vc:pager paging-list="@ViewBag.clients" />
+</nav>

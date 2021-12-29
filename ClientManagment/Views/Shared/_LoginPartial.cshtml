@@ -4,16 +4,16 @@
 
 <ul class="navbar-nav">
     @if (SignInManager.IsSignedIn(User))
-    {
-        <li class="nav-item">
-            <span style="color:white;float:right;margin: 6px 10px 0 0;">
+    { 
+        @*<li class="nav-item">
+            <span style="color: black; float: right; margin: 6px 10px 0 0;">
                 @User.Identity.Name
             </span>
-        </li>
+        </li>*@
 
         <li class="nav-item">
             <form class="form-inline" style="float:right" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })" title="Cerrar Sesión">
-                <button type="submit" class="nav-link btn btn-link text-dark" title="Cerrar Sesión">
+                <button type="submit" class="nav-link btn btn-link text-dark" title="Cerrar Sesión de @User.Identity.Name">
                     <i class="fas fa-sign-out-alt" style="font-size:20px;color: #2196F3;" aria-hidden="true"></i>
                 </button>
             </form>

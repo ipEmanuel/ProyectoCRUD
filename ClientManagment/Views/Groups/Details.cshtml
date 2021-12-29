@@ -26,9 +26,10 @@
             INTEGRANTES
         </dt>
         <dd class="col-sm-10">
+
             @if (Model.Clients != null && Model.Clients.Count > 0)
             {
-                integrantes = string.Empty;
+                integrantes = string.Empty;// ¨¨
 
                 @foreach (var cliente in Model.Clients)
                 {

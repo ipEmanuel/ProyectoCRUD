@@ -1,10 +1,26 @@
 ﻿@{
     Layout = null;
+    Guid? existe = null;
 }
 
-@model ReflectionIT.Mvc.Paging.PagingList<ClientManagment.Models.Client>
+@*@model ReflectionIT.Mvc.Paging.PagingList<ClientManagment.Models.Client>*@
 @using ReflectionIT.Mvc.Paging
 @addTagHelper *, ReflectionIT.Mvc.Paging
+
+
+<div class="row">
+    @*<form asp-action="GetClientsList" asp-controller="Groups" method="get" class="form-inline col-12 col-md-6">*@
+    <div class="form-inline col-12">
+        <input id="filter" class="form-control col-12 col-md-7" placeholder="Ingrese valor a buscar" value="" style="margin-top:3%" />
+        <div class="col-2"></div>
+        <button id="searchButton"  class="btn btn-dark col-12 col-md-3" style="margin-top:3%">
+            <span class="glyphicon glyphicon-search" aria-hidden="true">Buscar</span>
+        </button>
+    </div>       
+    @*</form>*@
+</div>
+
+<br />
 
 <nav aria-label="navigation example">
     <vc:pager paging-list="@ViewBag.clients" />
@@ -22,9 +38,9 @@
             <th>
                 Documento
             </th>
-            <th>
-                Estado
-            </th>
+            @*<th>
+                    Estado
+                </th>*@
             <th>
                 Incluir?
             </th>
@@ -43,11 +59,27 @@
                 <td>
                     @item.DocumentNumber
                 </td>
+                @*<td>
+                        @item.isNotWished
+                    </td>*@
                 <td>
-                    @item.State
-                </td>
-                <td>
-                    <input data-clientId=@item.ClientId type="checkbox" class="clientGroup" />
+                    @if (ViewBag.existingClients != null)
+                    {
+                        existe = ((List<Guid>)ViewBag.existingClients).FirstOrDefault(id => id == item.ClientId);
+
+                        @if (existe != Guid.Empty)
+                        {
+                            <input data-clientId=@item.ClientId checked type="checkbox" class="clientGroup" />
+                        }
+                        else
+                        {
+                            <input data-clientId=@item.ClientId type="checkbox" class="clientGroup" />
+                        }
+                    }
+                    else
+                    {
+                        <input data-clientId=@item.ClientId type="checkbox" class="clientGroup" />
+                    }
                 </td>
             </tr>
         }

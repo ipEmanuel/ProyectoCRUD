@@ -73,32 +73,23 @@ namespace ClientManagment.Controllers
         }
 
         // GET: Groups/GetClientsList
-        public IActionResult GetClientsList(int pageIndex = 1)
+        public IActionResult GetClientsListAsync(string filter = "", int pageIndex = 1)
         {
-            ViewBag.clients = (PagingList<Client>)GetClients(string.Empty, pageIndex).Result;
-            return PartialView("~/Views/Groups/_ClientsList.cshtml");
-            //return new PartialViewResult
-            //{
-            //    ViewName = "_ClientsList",
-            //    ViewBag.clients = (PagingList<Client>)GetClients(string.Empty, pageIndex).Result
-            //}
+           ViewBag.clients = (PagingList<Client>)GetClients(filter, pageIndex).Result;
+           return PartialView("~/Views/Groups/_ClientsList.cshtml");
         }
 
-        public async Task<PagingList<Client>> GetClients(string filter, int pageIndex = 1)
+        public async Task<PagingList<Client>> GetClients(string filter = "", int pageIndex = 1)
         {
             var qry = _context.Clients.AsNoTracking().OrderBy(c => c.Surname).ThenBy(c => c.Name);
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 filter = filter.ToUpper();
-                qry = (IOrderedQueryable<Client>)qry.Where(c => c.Name.ToUpper().Contains(filter) || c.DocumentNumber.Contains(filter));
+                qry = (IOrderedQueryable<Client>)qry.Where(c => c.Name.Contains(filter) || c.DocumentNumber.Contains(filter) || c.Surname.Contains(filter) || c.Patent.Contains(filter));
             }
 
             var model = await PagingList.CreateAsync(qry, 9, pageIndex);
-
-            model.RouteValue = new RouteValueDictionary {
-                { "filter", filter}
-            };
 
             return model;
         }
@@ -159,7 +150,11 @@ namespace ClientManagment.Controllers
                 return NotFound();
             }
 
-            var @group = await _context.Groups.FindAsync(id);
+            var @group = await _context.Groups.Include(g => g.Clients).FirstOrDefaultAsync(g => g.GroupId == id);
+
+            ViewBag.clients = (PagingList<Client>)GetClients(string.Empty, 1).Result;
+            ViewBag.existingClients = @group.Clients.Select(c => c.ClientId).ToList();
+
             if (@group == null)
             {
                 return NotFound();
@@ -173,74 +168,82 @@ namespace ClientManagment.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit()
         {
-            Guid groupId = Guid.Parse(Request.Form["groupId"]);
-            Group @group = await _context.Groups.FindAsync(groupId);
-
-            if (@group == null)
+            try
             {
-                return NotFound();
-            }
+                Guid groupId = Guid.Parse(Request.Form["groupId"]);
+                Group @group = await _context.Groups.Include(g => g.Clients).FirstOrDefaultAsync(g => g.GroupId == groupId);
 
-            dynamic clientsid = JsonConvert.DeserializeObject(Request.Form["clientsId"]);        
-            string groupName = Request.Form["groupName"];
-            string groupDescription = Request.Form["groupDescription"];
-
-            List<Guid> newClientsIds = new List<Guid>(); 
-
-            @group.Name = groupName;
-            @group.Description = groupDescription;
-
-            var dbClients = new List<Client>();
-
-            if (clientsid.Count() > 0)
-                dbClients = await _context.Clients.ToListAsync();
-
-            foreach (var clientId in clientsid)
-            {
-                newClientsIds.Add(Guid.Parse(clientId.Value));
-
-                //me fijo si el cliente que viene ya está en el grupo
-                var existe =  @group.Clients.ToList().Find(Guid.Parse(clientId.Value));
-
-                if(existe == null)
+                if (@group == null)
                 {
-                    //me quedo con el cliente que voy a agregar
-                    Client client = dbClients.Find(Guid.Parse(clientId.Value));
-
-                    if (client != null)
-                        group.Clients.Add(client);
+                    return NotFound();
                 }
-            }
 
-            //quedate con los clientes que existan actualmente en el grupo pero que no lleguen chequeados (quiere decir que los deschequié)
-            var result = @group.Clients.Where(p => newClientsIds.All(p2 => p2 != p.ClientId));
+                var clientsid = JsonConvert.DeserializeObject<List<Guid>>(Request.Form["clientsId"]);
+                string groupName = Request.Form["groupName"];
+                string groupDescription = Request.Form["groupDescription"];
 
-            foreach (var client in result)
-            {
-                @group.Clients.Remove(client);
-            }
+                List<Guid> newClientsIds = new List<Guid>();
 
-            if (ModelState.IsValid)
-            {
-                try
+                @group.Name = groupName;
+                @group.Description = groupDescription;
+
+                var dbClients = new List<Client>();
+
+                if (clientsid.Count() > 0)
+                    dbClients = await _context.Clients.ToListAsync();
+
+                foreach (var clientId in clientsid)
                 {
-                    _context.Update(@group);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!GroupExists(@group.GroupId))
+                    newClientsIds.Add(clientId);
+
+                    //me fijo si el cliente que viene ya está en el grupo
+                    var existe = @group.Clients.ToList().FirstOrDefault(c => c.ClientId == clientId);
+
+                    if (existe == null)
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        //me quedo con el cliente que voy a agregar
+                        Client client = dbClients.FirstOrDefault(c => c.ClientId == clientId);
+
+                        if (client != null)
+                            group.Clients.Add(client);
                     }
                 }
-                return RedirectToAction(nameof(Index));
+
+                //quedate con los clientes que existan actualmente en el grupo pero que no lleguen chequeados (quiere decir que los deschequié)
+                var result = @group.Clients.Where(p => newClientsIds.All(p2 => p2 != p.ClientId));
+
+                foreach (var client in result)
+                {
+                    @group.Clients.Remove(client);
+                }
+
+                if (ModelState.IsValid)
+                {
+                    try
+                    {
+                        _context.Update(@group);
+                        await _context.SaveChangesAsync();
+                    }
+                    catch (DbUpdateConcurrencyException)
+                    {
+                        if (!GroupExists(@group.GroupId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
+                    }
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(@group);
             }
-            return View(@group);
+            catch(Exception ex)
+            {
+                throw ex;
+            }
+
         }
 
         // GET: Groups/Delete/5
